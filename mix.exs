@@ -27,7 +27,7 @@ defmodule AlfredServer.MixProject do
   def application do
     [
       mod: {AlfredServer.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :traverse]
     ]
   end
 
@@ -39,6 +39,7 @@ defmodule AlfredServer.MixProject do
       {:shoehorn, "~> 0.4"},
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
+      {:traverse, github: "MattiasJakobsson/traverse"},
 
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.6", targets: @all_targets},
