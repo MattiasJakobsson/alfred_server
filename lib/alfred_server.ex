@@ -1,18 +1,7 @@
 defmodule AlfredServer do
-  @moduledoc """
-  Documentation for AlfredServer.
-  """
+  use GenServer
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> AlfredServer.hello
-      :world
-
-  """
-  def hello do
-    :world
+  def init(data) do
+    {:ok, data}
   end
 end

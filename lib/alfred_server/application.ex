@@ -17,15 +17,13 @@ defmodule AlfredServer.Application do
   # List all child processes to be supervised
   def children(:host) do
     [
-      # Starts a worker by calling: AlfredServer.Worker.start_link(arg)
-      # {AlfredServer.Worker, arg},
+      {AlfredServer, []}
     ]
   end
 
   def children(_target) do
     [
-      # Starts a worker by calling: AlfredServer.Worker.start_link(arg)
-      # {AlfredServer.Worker, arg},
+      {AlfredServer, []}
     ]
   end
 end
