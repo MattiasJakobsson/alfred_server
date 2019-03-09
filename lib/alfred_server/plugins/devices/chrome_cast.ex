@@ -36,7 +36,7 @@ defmodule AlfredServer.Plugins.Devices.ChromeCast do
       GenServer.start_link(__MODULE__, [], name: __MODULE__)
     end
     
-    def init() do
+    def init(_) do
       Mdns.Client.query("_googlecast._tcp.local")
       
       Process.send(self(), :update_devicelist, [])
@@ -57,9 +57,8 @@ defmodule AlfredServer.Plugins.Devices.ChromeCast do
           name: Map.get(cast.payload, "fn", "Chromecast"),
           settings: %{ip: cast.ip}
         }
-      
-        #TODO: Publish event about new plugin
-        #GenServer.cast(listener, {:plugin_discovered, definition})
+
+        Phoenix.PubSub.broadcast(:alfred, "plugins", {:plugin_discovered, %{definition: definition}})
 
         Map.put(device_map, get_cast_key(cast), cast.payload)
       end)

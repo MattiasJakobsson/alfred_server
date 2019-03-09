@@ -12,12 +12,12 @@ defmodule AlfredServer.Plugins.Plugin do
     available_modules(AlfredServer.Plugins.Plugin) |> Enum.reduce([], &load_plugin/2)
   end
 
-  def start_discover_from(plugin_type, parent) when is_binary(plugin_type) do
-    start_discover_from(String.to_existing_atom("Elixir.#{plugin_type}"), parent)
+  def start_discover_from(plugin_type) when is_binary(plugin_type) do
+    start_discover_from(String.to_existing_atom("Elixir.#{plugin_type}"))
   end
 
-  def start_discover_from(plugin_type, parent) when is_atom(plugin_type) do
-    apply(plugin_type, :start_discover, [parent])
+  def start_discover_from(plugin_type) when is_atom(plugin_type) do
+    apply(plugin_type, :start_discover, [])
   end
   
   def initialize_plugin(definition) do

@@ -10,13 +10,15 @@ defmodule AlfredServer.Application do
 
   defp children(:host) do
     [
-      {AlfredServer, []}
+      {AlfredServer, []},
+      {Phoenix.PubSub.PG2, name: :alfred}
     ]
   end
 
   defp children(_target) do
     [
-      {AlfredServer, []}
+      {AlfredServer, []},
+      {Phoenix.PubSub.PG2, name: :alfred}
     ]
   end
 end
