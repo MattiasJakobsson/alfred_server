@@ -42,6 +42,8 @@ defmodule AlfredServer.MixProject do
       {:traverse, github: "MattiasJakobsson/traverse"},
       {:chromecast, github: "MattiasJakobsson/chromecast"},
       {:mdns, "~> 1.0"},
+      {:ecto, "~> 2.2.9"},
+      {:sqlite_ecto2, "~> 2.3"},
       #{:ssdp, github: "rosetta-home/ssdp"},
 
       # Dependencies for all targets except :host

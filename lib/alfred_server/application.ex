@@ -1,24 +1,23 @@
 defmodule AlfredServer.Application do
-  @target Mix.target()
-
   use Application
+  use Supervisor
 
   def start(_type, _args) do
-    opts = [strategy: :one_for_one, name: AlfredServer.Supervisor]
-    Supervisor.start_link(children(@target), opts)
+    start_link()
   end
 
-  defp children(:host) do
-    [
-      {AlfredServer, []},
-      {Phoenix.PubSub.PG2, name: :alfred}
-    ]
+  def start_link() do
+    Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  defp children(_target) do
-    [
-      {AlfredServer, []},
-      {Phoenix.PubSub.PG2, name: :alfred}
+  def init(:ok) do
+    children = [
+      supervisor(Plugin.Repo, []),
+      supervisor(Workflow.Repo, []),
+      supervisor(AlfredServer, []),
+      supervisor(Phoenix.PubSub.PG2, [:alfred, []])
     ]
+
+    supervise(children, strategy: :one_for_one)
   end
 end

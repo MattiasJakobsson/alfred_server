@@ -5,6 +5,18 @@
 # is restricted to this project.
 use Mix.Config
 
+config :alfred_server, Plugin.Repo,
+  adapter: Sqlite.Ecto2,
+  database: "alfred.sqlite"
+
+
+config :alfred_server, Workflow.Repo,
+  adapter: Sqlite.Ecto2,
+  database: "alfred.sqlite"
+
+config :alfred_server, ecto_repos: [Plugin.Repo, Workflow.Repo]
+
+
 # Customize non-Elixir parts of the firmware. See
 # https://hexdocs.pm/nerves/advanced-configuration.html for details.
 
