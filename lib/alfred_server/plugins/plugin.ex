@@ -1,32 +1,33 @@
 defmodule AlfredServer.Plugins.Plugin do
-  @callback discover() :: [] | [plugin] when plugin: Any
+  @callback start_discover() :: :ok
+  
+  defmodule Definition do
+    defstruct type: nil,
+              id: nil,
+              name: nil,
+              settings: %{}
+  end
 
   def find_all_plugin_types() do
     available_modules(AlfredServer.Plugins.Plugin) |> Enum.reduce([], &load_plugin/2)
   end
 
-  def discover_from(plugin_type) when is_binary(plugin_type) do
-    discover_from(String.to_existing_atom("Elixir.#{plugin_type}"))
+  def start_discover_from(plugin_type, parent) when is_binary(plugin_type) do
+    start_discover_from(String.to_existing_atom("Elixir.#{plugin_type}"), parent)
   end
 
-  def discover_from(plugin_type) when is_atom(plugin_type) do
-    apply(plugin_type, :discover, [])
+  def start_discover_from(plugin_type, parent) when is_atom(plugin_type) do
+    apply(plugin_type, :start_discover, [parent])
   end
-
-  def initialize_plugin(plugin_type, parameters) when is_binary(plugin_type) do
-    initialize_plugin(String.to_existing_atom("Elixir.#{plugin_type}"), parameters)
-  end
-
-  def initialize_plugin(plugin_type, parameters) when is_atom(plugin_type) do
-    plugin_id = UUID.uuid4()
-
+  
+  def initialize_plugin(definition) do
     {:ok, plugin} = GenServer.start_link(
-      plugin_type,
-      parameters,
-      name: {:global, plugin_id}
+      definition.type,
+      definition.settings,
+      name: {:global, definition.id}
     )
 
-    {:ok, plugin_id, plugin}
+    {:ok, plugin}
   end
 
   defp load_plugin(module, modules) do
@@ -54,20 +55,20 @@ defmodule AlfredServer.Plugins.Plugin do
   end
 
   defmacro __before_compile__(env) do
-    unless Module.defines?(env.module, {:discover, 0}) do
+    unless Module.defines?(env.module, {:start_discover, 0}) do
       quote do
-        def discover() do
-          []
+        def start_discover() do
+          :ok
         end
 
-        defoverridable discover: 0
+        defoverridable start_discover: 0
       end
     end
 
     unless Module.defines?(env.module, {:init, 1}) do
       quote do
-        def init(data) do
-          {:ok, data}
+        def init(definition) do
+          {:ok, definition}
         end
 
         defoverridable init: 1

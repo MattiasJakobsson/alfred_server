@@ -5,38 +5,24 @@ defmodule AlfredServer do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
   
-  def find_available_plugins() do
-    GenServer.call(__MODULE__, :find_plugin_types)
+  def add_plugin(definition) do
+    GenServer.cast(__MODULE__, {:add_plugin, definition})
   end
 
-  def add_plugin(type, parameters) do
-    GenServer.cast(__MODULE__, {:add_plugin, {type, parameters}})
-  end
+  def init(_) do
+    Mdns.Client.start()
 
-  def discover_for(plugin_type) do
-    GenServer.call(__MODULE__, {:discover_plugins, plugin_type})
-  end
-
-  def init(data) do
-    {:ok, data}
-  end
-
-  def handle_call(:find_plugin_types, _, data) do
-    response = AlfredServer.Plugins.Plugin.find_all_plugin_types()
+    AlfredServer.Plugins.Plugin.find_all_plugin_types()
+    |> Enum.each(fn (plugin_type) ->
+      AlfredServer.Plugins.Plugin.start_discover_from(plugin_type)
+    end)
     
-    {:reply, response, data}
+    {:ok, %{}}
   end
 
-  def handle_call({:discover_plugins, plugin_type}, _, data) do
-    response = AlfredServer.Plugins.Plugin.discover_from(plugin_type)
-    
-    {:reply, response, data}
-  end
+  def handle_cast({:add_plugin, definition}, plugins) do
+    {:ok, plugin} = AlfredServer.Plugins.Plugin.initialize_plugin(definition)
 
-  def handle_cast({:add_plugin, {type, parameters}}, data) do
-    {:ok, plugin_id, plugin} = AlfredServer.Plugins.Plugin.initialize_plugin(type, parameters)
-    #TODO: Add to data
-    
-    {:noreply, data}
+    {:noreply, Map.put(plugins, definition.id, %{pid: plugin, definition: definition})}
   end
 end

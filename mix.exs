@@ -40,6 +40,9 @@ defmodule AlfredServer.MixProject do
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
       {:traverse, github: "MattiasJakobsson/traverse"},
+      {:chromecast, github: "MattiasJakobsson/chromecast"},
+      {:mdns, "~> 1.0"},
+      #{:ssdp, github: "rosetta-home/ssdp"},
 
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.6", targets: @all_targets},
