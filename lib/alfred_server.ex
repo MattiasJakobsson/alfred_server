@@ -18,10 +18,10 @@ defmodule AlfredServer do
     initialize_plugins()
 
     initialize_workflows()
-    
-    Mdns.Client.start()
 
-    initialize_plugin_discovery()
+    GenServer.cast(self(), :start_plugin_discovery)
+
+    Mdns.Client.start()
     
     {:ok, %{}}
   end
@@ -46,19 +46,14 @@ defmodule AlfredServer do
     
     workflows = Workflow.Repo.all(query)
     
+    me = self()
+    
     workflows 
     |> Enum.each(fn (workflow) ->
-      Traverse.Workflow.Engine.schedule_workflow(workflow.triggers, workflow.definition)
+      GenServer.cast(me, {:start_workflow, {workflow.triggers, workflow.definition}})
     end)
   end
 
-  defp initialize_plugin_discovery() do
-    AlfredServer.Plugins.Plugin.find_all_plugin_types()
-    |> Enum.each(fn (plugin_type) ->
-      AlfredServer.Plugins.Plugin.start_discover_from(plugin_type)
-    end)
-  end
-  
   def handle_cast({:add_plugin, definition}, plugins) do
     Plugin.Repo.insert(%Plugin{key: definition.id, definition: Poison.encode!(definition, [])})
     
@@ -74,7 +69,20 @@ defmodule AlfredServer do
   def handle_cast({:add_workflow, {triggers, definition}}, plugins) do
     Workflow.Repo.insert(%Workflow{triggers: Poison.encode!(triggers, []), definition: Poison.encode!(definition, [])})
     
+    handle_cast({:start_workflow, {triggers, definition}}, plugins)
+  end
+
+  def handle_cast({:start_workflow, {triggers, definition}}, plugins) do
     Traverse.Workflow.Engine.schedule_workflow(triggers, definition)
+
+    {:noreply, plugins}
+  end
+
+  def handle_cast(:start_plugin_discovery, plugins) do
+    AlfredServer.Plugins.Plugin.find_all_plugin_types()
+    |> Enum.each(fn (plugin_type) ->
+      AlfredServer.Plugins.Plugin.start_discover_from(plugin_type)
+    end)
     
     {:noreply, plugins}
   end
