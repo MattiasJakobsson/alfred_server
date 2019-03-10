@@ -7,9 +7,7 @@ defmodule Alfred do
     opts = [strategy: :one_for_one, name: Alfred.Supervisor]
 
     children = [
-      supervisor(Plugin.Repo, []),
-      supervisor(Workflow.Repo, []),
-      supervisor(Alfred, []),
+      supervisor(Alfred.Engine, []),
       supervisor(Phoenix.PubSub.PG2, [:alfred, []])
     ]
 

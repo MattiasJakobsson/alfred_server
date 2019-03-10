@@ -1,6 +1,5 @@
 defmodule Alfred.Engine do
   use GenServer
-  import Ecto.Query
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -15,6 +14,8 @@ defmodule Alfred.Engine do
   end
 
   def init(_) do
+    migrate_database()
+    
     initialize_plugins()
 
     initialize_workflows()
@@ -26,36 +27,48 @@ defmodule Alfred.Engine do
     {:ok, %{}}
   end
 
-  defp initialize_plugins() do
-    query = from(p in Alfred.Entities.Plugin, select: p)
+  defp migrate_database() do
+    :mnesia.create_schema([node()])
+    :mnesia.start
+    
+    :mnesia.create_table(Plugin, [attributes: [:id, :definition]])
+    :mnesia.create_table(Workflow, [attributes: [:id, :triggers, :definition]])
+    
+    :ok
+  end
 
-    plugins = Alfred.Entities.Plugin.Repo.all(query)
+  defp initialize_plugins() do
+    {:atomic, plugins} = :mnesia.transaction(fn ->
+      :mnesia.match_object({Plugin, :_, :_})
+    end)
 
     me = self()
 
     plugins
-    |> Enum.each(fn (plugin) ->
-      {:ok, parsed_plugin} = Poison.Parser.parse(plugin.definition)
+    |> Enum.each(fn ({_, definition}) ->
+      {:ok, parsed_plugin} = Poison.Parser.parse(definition)
 
       GenServer.cast(me, {:start_plugin, parsed_plugin})
     end)
   end
 
   defp initialize_workflows() do
-    query = from(w in Alfred.Entities.Workflow, select: w)
-
-    workflows = Alfred.Entities.Workflow.Repo.all(query)
+    {:atomic, workflows} = :mnesia.transaction(fn ->
+      :mnesia.match_object({Workflow, :_, :_, :_})
+    end)
 
     me = self()
 
     workflows
-    |> Enum.each(fn (workflow) ->
-      GenServer.cast(me, {:start_workflow, {workflow.triggers, workflow.definition}})
+    |> Enum.each(fn ({_, triggers, definition}) ->
+      GenServer.cast(me, {:start_workflow, {triggers, definition}})
     end)
   end
 
   def handle_cast({:add_plugin, definition}, plugins) do
-    Alfred.Entities.Plugin.Repo.insert(%Alfred.Entities.Plugin{key: definition.id, definition: Poison.encode!(definition, [])})
+    :mnesia.transaction(fn -> 
+      :mnesia.write({Plugin, definition.id, Poison.encode!(definition, [])})
+    end)
 
     handle_cast({:start_plugin, definition}, plugins)
   end
@@ -67,7 +80,9 @@ defmodule Alfred.Engine do
   end
 
   def handle_cast({:add_workflow, {triggers, definition}}, plugins) do
-    Alfred.Entities.Workflow.Repo.insert(%Alfred.Entities.Workflow{triggers: Poison.encode!(triggers, []), definition: Poison.encode!(definition, [])})
+    :mnesia.transaction(fn ->
+      :mnesia.write({Workflow, UUID.uuid4(), Poison.encode!(triggers, []), Poison.encode!(definition, [])})
+    end)
 
     handle_cast({:start_workflow, {triggers, definition}}, plugins)
   end
