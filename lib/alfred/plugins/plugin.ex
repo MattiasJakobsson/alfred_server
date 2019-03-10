@@ -1,4 +1,4 @@
-defmodule AlfredServer.Plugins.Plugin do
+defmodule Alfred.Plugins.Plugin do
   @callback start_discover() :: :ok
   
   defmodule Definition do
@@ -9,7 +9,7 @@ defmodule AlfredServer.Plugins.Plugin do
   end
 
   def find_all_plugin_types() do
-    available_modules(AlfredServer.Plugins.Plugin) |> Enum.reduce([], &load_plugin/2)
+    available_modules(Alfred.Plugins.Plugin) |> Enum.reduce([], &load_plugin/2)
   end
 
   def start_discover_from(plugin_type) when is_binary(plugin_type) do
@@ -50,7 +50,7 @@ defmodule AlfredServer.Plugins.Plugin do
   defmacro __using__(_) do
     quote location: :keep do
       use GenServer
-      @behaviour AlfredServer.Plugins.Plugin
+      @behaviour Alfred.Plugins.Plugin
     end
   end
 

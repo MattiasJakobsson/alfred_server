@@ -1,8 +1,8 @@
-defmodule AlfredServer.Plugins.Devices.ChromeCast do
-  use AlfredServer.Plugins.Plugin
+defmodule Alfred.Plugins.Devices.ChromeCast do
+  use Alfred.Plugins.Plugin
 
   def start_discover() do
-    {:ok, _} = AlfredServer.Plugins.Devices.ChromeCast.Discoverer.start_link()
+    {:ok, _} = Alfred.Plugins.Devices.ChromeCast.Discoverer.start_link()
     
     :ok
   end
@@ -51,8 +51,8 @@ defmodule AlfredServer.Plugins.Devices.ChromeCast do
       |> Enum.filter(fn(cast) -> Map.has_key?(cast.payload, "md") end)
       |> Enum.filter(fn(cast) -> !Map.has_key?(devices, get_cast_key(cast)) end)
       |> Enum.reduce(devices, fn (cast, device_map) ->
-        definition = %AlfredServer.Plugins.Plugin.Definition{
-          type: AlfredServer.Plugins.Devices.ChromeCast,
+        definition = %Alfred.Plugins.Plugin.Definition{
+          type: Alfred.Plugins.Devices.ChromeCast,
           id: get_cast_key(cast),
           name: Map.get(cast.payload, "fn", "Chromecast"),
           settings: %{ip: cast.ip}

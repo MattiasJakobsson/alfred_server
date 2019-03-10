@@ -1,11 +1,11 @@
-defmodule AlfredServer.MixProject do
+defmodule Alfred.MixProject do
   use Mix.Project
 
   @all_targets [:rpi, :rpi0, :rpi2, :rpi3, :rpi3a, :bbb, :x86_64]
 
   def project do
     [
-      app: :alfred_server,
+      app: :alfred,
       version: "0.1.0",
       elixir: "~> 1.8",
       archives: [nerves_bootstrap: "~> 1.5"],
@@ -26,7 +26,7 @@ defmodule AlfredServer.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {AlfredServer.Application, []},
+      mod: {Alfred.Application, []},
       extra_applications: [:logger, :runtime_tools, :traverse]
     ]
   end

@@ -1,4 +1,4 @@
-defmodule AlfredServer do
+defmodule Alfred do
   use GenServer
   import Ecto.Query
   
@@ -61,7 +61,7 @@ defmodule AlfredServer do
   end
 
   def handle_cast({:start_plugin, definition}, plugins) do
-    {:ok, plugin} = AlfredServer.Plugins.Plugin.initialize_plugin(definition)
+    {:ok, plugin} = Alfred.Plugins.Plugin.initialize_plugin(definition)
 
     {:noreply, Map.put(plugins, definition.id, %{pid: plugin, definition: definition})}
   end
@@ -79,9 +79,9 @@ defmodule AlfredServer do
   end
 
   def handle_cast(:start_plugin_discovery, plugins) do
-    AlfredServer.Plugins.Plugin.find_all_plugin_types()
+    Alfred.Plugins.Plugin.find_all_plugin_types()
     |> Enum.each(fn (plugin_type) ->
-      AlfredServer.Plugins.Plugin.start_discover_from(plugin_type)
+      Alfred.Plugins.Plugin.start_discover_from(plugin_type)
     end)
     
     {:noreply, plugins}
