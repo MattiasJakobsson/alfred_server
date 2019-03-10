@@ -25,8 +25,8 @@ end
 # when running `mix release`, the first release in the file
 # will be used by default
 
-release :alfred_server do
-  set(version: current_version(:alfred_server))
+release :alfred do
+  set(version: current_version(:alfred))
   set(strip_debug_info: true)
   plugin(Nerves)
   plugin(Shoehorn)
