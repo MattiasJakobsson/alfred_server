@@ -73,7 +73,7 @@ defmodule Alfred.Engine do
   end
 
   def handle_cast({:start_workflow, {triggers, definition}}, plugins) do
-    Traverse.Workflow.Engine.schedule_workflow(triggers, definition)
+    Traverse.Engine.schedule_workflow(triggers, definition)
 
     {:noreply, plugins}
   end
