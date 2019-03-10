@@ -65,7 +65,7 @@
   "system_registry": {:hex, :system_registry, "0.8.2", "df791dc276652fcfb53be4dab823e05f8269b96ac57c26f86a67838dbc0eefe7", [:mix], [], "hexpm"},
   "timex": {:hex, :timex, "3.5.0", "b0a23167da02d0fe4f1a4e104d1f929a00d348502b52432c05de875d0b9cffa5", [:mix], [{:combine, "~> 0.10", [hex: :combine, repo: "hexpm", optional: false]}, {:gettext, "~> 0.10", [hex: :gettext, repo: "hexpm", optional: false]}, {:tzdata, "~> 0.1.8 or ~> 0.5", [hex: :tzdata, repo: "hexpm", optional: false]}], "hexpm"},
   "toolshed": {:hex, :toolshed, "0.2.5", "9fe822e95e5896bf6c39821fc7ab84034d52559ef1e4882164b0f551a5a065f5", [:mix], [{:nerves_runtime, "~> 0.8", [hex: :nerves_runtime, repo: "hexpm", optional: true]}], "hexpm"},
-  "traverse": {:git, "https://github.com/MattiasJakobsson/traverse.git", "d8cb21f4ff0bed8e91f1694099657f873d2f3677", []},
+  "traverse": {:git, "https://github.com/MattiasJakobsson/traverse.git", "949e6e220aed3ec32da6c05140e9fb82f5ef7cef", []},
   "tzdata": {:hex, :tzdata, "0.5.19", "7962a3997bf06303b7d1772988ede22260f3dae1bf897408ebdac2b4435f4e6a", [:mix], [{:hackney, "~> 1.0", [hex: :hackney, repo: "hexpm", optional: false]}], "hexpm"},
   "uboot_env": {:hex, :uboot_env, "0.1.0", "176d277c8461d849614d8b82595060bf03ace6ca59d49c5b53707d90cb9e2f5a", [:mix], [], "hexpm"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.4.1", "d869e4c68901dd9531385bb0c8c40444ebf624e60b6962d95952775cac5e90cd", [:rebar3], [], "hexpm"},
