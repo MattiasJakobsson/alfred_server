@@ -26,7 +26,7 @@ defmodule Alfred.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {Alfred.Application, []},
+      mod: {Alfred, []},
       extra_applications: [:logger, :runtime_tools, :traverse]
     ]
   end

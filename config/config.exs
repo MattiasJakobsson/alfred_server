@@ -5,16 +5,16 @@
 # is restricted to this project.
 use Mix.Config
 
-config :alfred_server, Plugin.Repo,
+config :alfred, Alfred.Entities.Plugin.Repo,
   adapter: Sqlite.Ecto2,
   database: "alfred.sqlite"
 
 
-config :alfred_server, Workflow.Repo,
+config :alfred, Alfred.Entities.Workflow.Repo,
   adapter: Sqlite.Ecto2,
   database: "alfred.sqlite"
 
-config :alfred_server, ecto_repos: [Plugin.Repo, Workflow.Repo]
+config :alfred, ecto_repos: [Alfred.Entities.Plugin.Repo, Alfred.Entities.Workflow.Repo]
 
 
 # Customize non-Elixir parts of the firmware. See
