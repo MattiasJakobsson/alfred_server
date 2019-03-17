@@ -94,7 +94,7 @@ defmodule Alfred.Engine do
   end
 
   def handle_cast(:start_plugin_discovery, plugins) do
-    Alfred.Plugins.Plugin.find_all_plugin_types()
+    Traverse.PluginLoader.find_all_plugin_types(Alfred.Plugins.Plugin)
     |> Enum.each(fn (plugin_type) ->
       Alfred.Plugins.Plugin.start_discover_from(plugin_type)
     end)

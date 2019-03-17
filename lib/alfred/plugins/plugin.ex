@@ -7,11 +7,7 @@ defmodule Alfred.Plugins.Plugin do
               name: nil,
               settings: %{}
   end
-
-  def find_all_plugin_types() do
-    available_modules(Alfred.Plugins.Plugin) |> Enum.reduce([], &load_plugin/2)
-  end
-
+  
   def start_discover_from(plugin_type) when is_binary(plugin_type) do
     start_discover_from(String.to_existing_atom("Elixir.#{plugin_type}"))
   end
@@ -29,23 +25,6 @@ defmodule Alfred.Plugins.Plugin do
 
     {:ok, plugin}
   end
-
-  defp load_plugin(module, modules) do
-    if Code.ensure_loaded?(module), do: [module | modules], else: modules
-  end
-
-  defp available_modules(plugin_type) do
-    Mix.Task.run("loadpaths", [])
-    
-    Path.wildcard(Path.join([Mix.Project.build_path, "**/ebin/**/*.beam"]))
-    |> Stream.map(fn path ->
-      {:ok, {mod, chunks}} = :beam_lib.chunks('#{path}', [:attributes])
-      {mod, get_in(chunks, [:attributes, :behaviour])}
-    end)
-    |> Stream.filter(fn {_mod, behaviours} -> is_list(behaviours) && plugin_type in behaviours end)
-    |> Enum.uniq
-    |> Enum.map(fn {module, _} -> module end)
-  end
   
   defmacro __using__(_) do
     quote location: :keep do
@@ -57,9 +36,7 @@ defmodule Alfred.Plugins.Plugin do
   defmacro __before_compile__(env) do
     unless Module.defines?(env.module, {:start_discover, 0}) do
       quote do
-        def start_discover() do
-          :ok
-        end
+        def start_discover(), do: :ok
 
         defoverridable start_discover: 0
       end
@@ -67,9 +44,7 @@ defmodule Alfred.Plugins.Plugin do
 
     unless Module.defines?(env.module, {:init, 1}) do
       quote do
-        def init(definition) do
-          {:ok, definition}
-        end
+        def init(definition), do: {:ok, definition}
 
         defoverridable init: 1
       end
