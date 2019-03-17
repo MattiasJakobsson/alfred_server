@@ -24,11 +24,15 @@ defmodule Alfred.Plugins.Devices.ChromeCast do
     
     {:noreply, {chromecast, new_state}}
   end
-
-  def handle_call(:status, _, {chromecast, state}) do
-    {:reply, state, {chromecast, state}}
+  
+  query :status, {_, state} do
+    state
   end
   
+  query :test_query, {asd}, _ do
+    asd
+  end
+ 
   defmodule Discoverer do
     use GenServer
 
