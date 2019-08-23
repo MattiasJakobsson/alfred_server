@@ -28,11 +28,7 @@ defmodule Alfred.Plugins.Devices.ChromeCast do
   query :status, {_, state} do
     state
   end
-  
-  query :test_query, {asd}, _ do
-    asd
-  end
- 
+
   defmodule Discoverer do
     use GenServer
 

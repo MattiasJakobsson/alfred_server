@@ -43,9 +43,10 @@ defmodule Alfred.Engine do
   end
 
   defp initialize_plugins() do
+    me = self()
+    
     case :mnesia.transaction(fn -> :mnesia.match_object({Plugin, :_, :_}) end) do
-      {:atomic, plugins} -> me = self()
-
+      {:atomic, plugins} ->
                             plugins
                             |> Enum.each(fn ({_, definition}) ->
                               {:ok, parsed_plugin} = Poison.Parser.parse(definition)
@@ -57,9 +58,10 @@ defmodule Alfred.Engine do
   end
 
   defp initialize_workflows() do
+    me = self()
+    
     case :mnesia.transaction(fn -> :mnesia.match_object({Workflow, :_, :_, :_}) end) do
-      {:atomic, workflows} -> me = self()
-
+      {:atomic, workflows} ->
                             workflows
                             |> Enum.each(fn ({_, triggers, definition}) ->
                               GenServer.cast(me, {:start_workflow, {triggers, definition}})
